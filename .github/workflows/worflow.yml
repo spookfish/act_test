@@ -1,0 +1,22 @@
+name: env-vars-example
+on:
+  push:
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Say Hello
+        run: echo "MOO world! $FOO"
+      -
+        name: Do stuff
+        run: |
+          echo "Step 1..."
+          echo "Step 2..."
+          echo "Step 3..."
+      -
+        name: Git test
+        run: git --version
+      -
+        name: Say Goodbye
+        run: echo "Goodbye!"
