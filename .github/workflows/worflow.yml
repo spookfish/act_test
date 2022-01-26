@@ -1,22 +1,109 @@
-name: env-vars-example
+# name: env-vars-example
+# on:
+#   push:
+# jobs:
+#   say-hello:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       -
+#        name: Who to Greet
+#        uses: actions/hello-world-javascript-action@v1.1
+#        with: 
+#           who-to-greet: 'Mona the Octocat'
+#       -
+#         name: Say Hello
+#         run: echo "MOO world! $FOO"
+#       -
+#         name: Do stuff
+#         run: |
+#           echo "Step 1..."
+#           echo "Step 2..."
+#           echo "Step 3..."
+#       -
+#         name: Git test
+#         run: git --version
+#       -
+#         name: Say Goodbye
+#         run: echo "Goodbye!"
+
+# name: parallel-jobs
+# on:
+#   push:
+# jobs:
+#   job-a:
+#     runs-on: ubuntu-latest
+#     needs: [job-c]
+#     steps:
+#       - run: echo "Doing work"
+#   job-b:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - run: echo "More work at the same time"
+#   job-c:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - run: |
+#           sleep 5
+#           echo "Done!"
+
+# name: outputs
+# on: 
+#   push:
+# jobs:
+#   job1:
+#     runs-on: ubuntu-latest
+#     steps:
+#       -
+#         name: Do Work
+#         run: |
+#           echo '::set-output name=FAV_NUMBER::3'
+#           echo '::set-output name=FAV_COLOR::blue'
+#         id: abc
+#       -
+#         name: Read output
+#         run: |
+#           echo "${{ steps.abc.outputs.FAV_NUMBER }}"
+#           echo "${{ steps.abc.outputs.FAV_COLOR }}"
+#     outputs:
+#       fav-animal: tiger
+#       fav-number: ${{ steps.abc.outputs.FAV_NUMBER }}
+#       fav-food: fish and chips
+#   job2:
+#     runs-on: ubuntu-latest
+#     needs: job1
+#     steps:
+#       - run: |
+#           echo "${{ needs.job1.outputs.fav-animal }}"
+#           echo "${{ needs.job1.outputs.fav-number }}"
+#           echo "${{ needs.job1.outputs.fav-food }}"
+
+# Contexts are collections of variables that are accessible outside of the run
+# commands. You can think of them as variables which can be templated into the
+# workflow file itself. 
+name: contexts-example
 on:
   push:
+  pull:
 jobs:
-  say-hello:
+  use-context:
+    strategy:
+      matrix:
+        greeting: [Hello, Howdy, Hey]
     runs-on: ubuntu-latest
     steps:
       -
-        name: Say Hello
-        run: echo "MOO world! $FOO"
+        name: Print Greeting
+        run: echo $GREETING
+        env:
+          GREETING: ${{ matrix.greeting }}
       -
-        name: Do stuff
-        run: |
-          echo "Step 1..."
-          echo "Step 2..."
-          echo "Step 3..."
+        name: Do work with a secret
+        run: "${GITHUB_WORKSPACE}/.github/workflows/a.sh"
+        shell: bash
+        env:
+          A_SECRET: ${{ secrets.A_SECRET }}
       -
-        name: Git test
-        run: git --version
-      -
-        name: Say Goodbye
-        run: echo "Goodbye!"
+        name: Run only for pulls
+        if: ${{ github.event = "pull" }}
+        run: echo "Triggered by a pull request"
