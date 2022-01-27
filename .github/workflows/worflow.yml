@@ -81,29 +81,64 @@
 # Contexts are collections of variables that are accessible outside of the run
 # commands. You can think of them as variables which can be templated into the
 # workflow file itself. 
-name: contexts-example
+# name: contexts-example
+# on:
+#   pull:
+# jobs:
+#   use-context:
+#     strategy:
+#       matrix:
+#         greeting: [Hello, Howdy]
+#     runs-on: ubuntu-latest
+#     steps:
+#       -
+#         name: Print Greeting
+#         run: echo $GREETING
+#         env:
+#           GREETING: ${{ matrix.greeting }}
+#       -
+#         name: Do work with a secret
+#         run: |
+#           echo $GITHUB_WORKSPACE
+#           echo ${{ github.event_name }}
+#         env:
+#           A_SECRET: ${{ secrets.A_SECRET }}
+#       -
+#         name: Run only for pulls
+#         if: ${{ github.event_name == 'pull' }}
+#         run: |
+#           echo "Triggered by a pull request"
+#           echo ${{ github.base_ref }}
+
+name: go-example
 on:
   push:
-  pull:
 jobs:
-  use-context:
-    strategy:
-      matrix:
-        greeting: [Hello, Howdy, Hey]
+  fuck:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       -
-        name: Print Greeting
-        run: echo $GREETING
-        env:
-          GREETING: ${{ matrix.greeting }}
+        name: Moo
+        run: |
+          echo "moo!"
       -
-        name: Do work with a secret
-        run: "${GITHUB_WORKSPACE}/.github/workflows/a.sh"
-        shell: bash
-        env:
-          A_SECRET: ${{ secrets.A_SECRET }}
+        name: Set up Go 1.17
+        uses: actions/setup-go@v2
+        id: go
+        with:
+          go-version: 1.17
       -
-        name: Run only for pulls
-        if: ${{ github.event = "pull" }}
-        run: echo "Triggered by a pull request"
+        name: Print Go Version
+        run: |
+          go version
+      -
+        name: Install catfact
+        run: |
+          go install github.com/spookfish/catfact@v1.0.0
+      - 
+        name: Cat Fact
+        run: |
+          go env
+          echo $PATH
+          catfact
