@@ -110,35 +110,50 @@
 #           echo "Triggered by a pull request"
 #           echo ${{ github.base_ref }}
 
-name: go-example
+# name: go-example
+# on:
+#   push:
+# jobs:
+#   fuck:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       -
+#         name: Moo
+#         run: |
+#           echo "moo!"
+#       -
+#         name: Set up Go 1.17
+#         uses: actions/setup-go@v2
+#         id: go
+#         with:
+#           go-version: 1.17
+#       -
+#         name: Print Go Version
+#         run: |
+#           go version
+#       -
+#         name: Install catfact
+#         run: |
+#           go install github.com/spookfish/catfact@v1.0.0
+#       - 
+#         name: Cat Fact
+#         run: |
+#           go env
+#           echo $PATH
+#           catfact
+
+name: Semgrep
 on:
-  push:
+  push
 jobs:
-  fuck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      -
-        name: Moo
-        run: |
-          echo "moo!"
-      -
-        name: Set up Go 1.17
-        uses: actions/setup-go@v2
-        id: go
-        with:
-          go-version: 1.17
-      -
-        name: Print Go Version
-        run: |
-          go version
-      -
-        name: Install catfact
-        run: |
-          go install github.com/spookfish/catfact@v1.0.0
-      - 
-        name: Cat Fact
-        run: |
-          go env
-          echo $PATH
-          catfact
+    semgrep:
+      name: scan
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: returntocorp/semgrep-action@v1
+          with:
+            config: >- # more at semgrep.dev/explore
+              p/security-audit
+              p/secrets
